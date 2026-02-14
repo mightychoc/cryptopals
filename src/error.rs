@@ -4,14 +4,16 @@ use std::error::Error;
 #[derive(Debug)]
 pub enum CryptoError{
     Hex(HexError),
-    Base64(Base64Error)
+    Base64(Base64Error),
+    StreamCipher(StreamCipherError)
 }
 
 impl fmt::Display for CryptoError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Hex(err) => write!(f, "Hex Error: {}", err),
-            Self::Base64(err) => write!(f, "Base64 Error: {}", err)
+            Self::Base64(err) => write!(f, "Base64 Error: {}", err),
+            Self::StreamCipher(err) => write!(f, "Stream cipher error: {}", err)
         }
     }
 }
@@ -71,11 +73,36 @@ impl From<Base64Error> for CryptoError {
     }
 }
 
+// General errors for stream ciphers
+
+#[derive(Debug)]
+pub enum StreamCipherError {
+    LengthMismatch(usize,usize),
+}
+
+impl Error for StreamCipherError {}
+
+impl fmt::Display for StreamCipherError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::LengthMismatch(in_len, stream_len) => write!(f, "Input length {} does not match length of key stream {}", in_len, stream_len),
+        }
+    }
+}
+
+impl From<StreamCipherError> for CryptoError {
+    fn from(err: StreamCipherError) -> Self {
+        Self::StreamCipher(err)
+    }
+}
+
+
 impl Error for CryptoError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
             Self::Hex(err) => Some(err),
-            Self::Base64(err) => Some(err)
+            Self::Base64(err) => Some(err),
+            Self::StreamCipher(err) => Some(err)
         }
     }
 }

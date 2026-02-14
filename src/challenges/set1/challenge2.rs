@@ -1,12 +1,13 @@
 use crate::encoding::hex;
-use crate::encoding::base64;
+use crate::util::xor;
 use crate::error::CryptoError;
 
 #[allow(dead_code)]
 fn solve(input: &str, stream: &str) -> Result<String, CryptoError> {
     let input_bytes = hex::decode(input)?;
     let stream_bytes = hex::decode(stream)?;
-    let encrypted = xor::encrypt(input_bytes, stream_bytes)?;
+    let encrypted_bytes = xor::encrypt(input_bytes, stream_bytes)?;
+    let encrypted = hex::encode(&encrypted_bytes);
 
     Ok(encrypted)
 }
