@@ -1,6 +1,6 @@
 use crate::encoding::hex;
-use crate::util::xor;
 use crate::error::CryptoError;
+use crate::util::xor;
 
 #[allow(dead_code)]
 fn solve(input: &str, stream: &str) -> Result<String, CryptoError> {
@@ -17,7 +17,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn solve_set1_challenge1() {
+    fn solve_set1_challenge2() {
         let input = "1c0111001f010100061a024b53535009181c";
         let stream = "686974207468652062756c6c277320657965";
         let expected = "746865206b696420646f6e277420706c6179";

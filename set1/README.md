@@ -16,6 +16,10 @@ SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
 
 So go ahead and make that happen. You'll need this code for the rest of the exercises.
 
+### Solution
+
+Just a straigh forward implementation based on the [wikipedia article](https://en.wikipedia.org/wiki/Base64) and [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648).
+
 
 ## Challenge 2 - Fixed XOR
 
@@ -39,6 +43,10 @@ If your function works properly, then when you feed it the string:
 746865206b696420646f6e277420706c6179
 ```
 
+### Solution
+
+We just implement a function which byte-wise XORs two `Vec<u8>` buffers to solve this challenge.
+
 ## Challenge 3 - Single-Byte XOR Cipher
 
  The hex encoded string:
@@ -52,6 +60,15 @@ If your function works properly, then when you feed it the string:
 You can do this by hand. But don't: write code to do it for you.
 
 How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
+
+### Solution
+
+For scoring a decrypted text, we can use different metrics. The one suggested by the challenge is unigram letter frequency. We however also implement scoring based on bigrams (letter-pairs), non-ASCII, non-printable and seldom used ASCII characters, Shanon entropy and index of coincidence.
+
+#### Resources
+*Letter Frequencies:*
+- Peter Norvig, [English Letter Frequency Counts: Mayzner Revisited or ETAOIN SRHLDCU](https://norvig.com/mayzner.html)
+- 
 
 ## Challenge 4 - Detect Single-Character XOR
 
