@@ -20,7 +20,6 @@ So go ahead and make that happen. You'll need this code for the rest of the exer
 
 Come up with an implementation based on the [Wikipedia article on base64](https://en.wikipedia.org/wiki/Base64) and/or the corresponding [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648).
 
-
 ## Challenge 2 - Fixed XOR
 
 Write a function that takes two equal-length buffers and produces their XOR combination.
@@ -49,7 +48,7 @@ Simply implement a function which byte-wise XORs two `&[u8]` buffers to solve th
 
 ## Challenge 3 - Single-Byte XOR Cipher
 
- The hex encoded string:
+The hex encoded string:
 
 ```
 1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736
@@ -59,18 +58,19 @@ Simply implement a function which byte-wise XORs two `&[u8]` buffers to solve th
 
 You can do this by hand. But don't: write code to do it for you.
 
-How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score. 
+How? Devise some method for "scoring" a piece of English plaintext. Character frequency is a good metric. Evaluate each output and choose the one with the best score.
 
 ### Solution
 
-*Letter Frequency Resources:*
+_Letter Frequency Resources:_
+- [Wikipedia](https://en.wikipedia.org/wiki/Letter_frequency)
 - Peter Norvig, [English Letter Frequency Counts: Mayzner Revisited or ETAOIN SRHLDCU](https://norvig.com/mayzner.html)
 - The related [gist](https://gist.github.com/lydell/c439049abac2c9226e53) which helps extracting the data
 - For log-likelihood and $\chi^2$ tests consult the Wikipedia articles or any standard work on statistics.
 
 ## Challenge 4 - Detect Single-Character XOR
 
-One of the 60-character strings in [this file](./data/challenge4.txt) has been encrypted by single-character XOR. Find it. 
+One of the 60-character strings in [this file](./data/challenge4.txt) has been encrypted by single-character XOR. Find it.
 
 ## Challenge 5 - Implement Repeating-Key XOR
 
@@ -105,14 +105,18 @@ Here's how:
 1. Let KEYSIZE be the guessed length of the key; try values from 2 to (say) 40.
 
 1. Write a function to compute the edit distance/Hamming distance between two strings. The Hamming distance is just the number of differing bits. The distance between:
-    ```
-    this is a test
-    ```
-    and
-    ```
-    wokka wokka!!!
-    ```
-    is 37. Make sure your code agrees before you proceed.
+
+   ```
+   this is a test
+   ```
+
+   and
+
+   ```
+   wokka wokka!!!
+   ```
+
+   is 37. Make sure your code agrees before you proceed.
 
 1. For each KEYSIZE, take the first KEYSIZE worth of bytes, and the second KEYSIZE worth of bytes, and find the edit distance between them. Normalize this result by dividing by KEYSIZE.
 
@@ -140,10 +144,10 @@ The Base64-encoded content in this file has been encrypted via AES-128 in ECB mo
 
 Decrypt it. You know the key, after all.
 
-Easiest way: use OpenSSL::Cipher and give it AES-128-ECB as the cipher. 
+Easiest way: use OpenSSL::Cipher and give it AES-128-ECB as the cipher.
 
 ## Challenge 8 - Detect AES in ECB Mode
 
 In [this file](./data/challenge8.txt) are a bunch of hex-encoded ciphertexts.
 
-One of them has been encrypted with ECB. Detect it. Remember that the problem with ECB is that it is stateless and deterministic; the same 16 byte plaintext block will always produce the same 16 byte ciphertext. 
+One of them has been encrypted with ECB. Detect it. Remember that the problem with ECB is that it is stateless and deterministic; the same 16 byte plaintext block will always produce the same 16 byte ciphertext.
