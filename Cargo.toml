@@ -7,3 +7,7 @@ edition = "2024"
 anyhow = "1.0.101"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
+
+[workspace]
+members = ["crylib", "challenges"]
+resolver = "2"

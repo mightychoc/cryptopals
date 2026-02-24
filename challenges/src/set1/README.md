@@ -18,7 +18,7 @@ So go ahead and make that happen. You'll need this code for the rest of the exer
 
 ### Solution
 
-Just a straigh forward implementation based on the [wikipedia article](https://en.wikipedia.org/wiki/Base64) and [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648).
+Come up with an implementation based on the [Wikipedia article on base64](https://en.wikipedia.org/wiki/Base64) and/or the corresponding [RFC 4648](https://datatracker.ietf.org/doc/html/rfc4648).
 
 
 ## Challenge 2 - Fixed XOR
@@ -45,7 +45,7 @@ If your function works properly, then when you feed it the string:
 
 ### Solution
 
-We just implement a function which byte-wise XORs two `Vec<u8>` buffers to solve this challenge.
+Simply implement a function which byte-wise XORs two `Vec<u8>` buffers to solve this challenge.
 
 ## Challenge 3 - Single-Byte XOR Cipher
 
@@ -63,12 +63,14 @@ How? Devise some method for "scoring" a piece of English plaintext. Character fr
 
 ### Solution
 
-For scoring a decrypted text, we can use different metrics. The one suggested by the challenge is unigram letter frequency. We however also implement scoring based on bigrams (letter-pairs), non-ASCII, non-printable and seldom used ASCII characters, Shanon entropy and index of coincidence.
+For scoring a decrypted text, we can use different metrics. The one suggested by the challenge is unigram letter frequency. We however also implement scoring based on bigrams (letter-pairs), non-ASCII, non-printable and seldom used ASCII characters, Shanon entropy and index of coincidence. Although a little overkill, I came up with a plug-and-play scoring system. Anything implementing the `Scorer` trait can be used to define a `CompositeScorer` which consists of different `WeightedScorers`. Each `Scorer` implementation returns a normalized value within $[0,1]$ which then get combined in a weighted sum within the `CompositeScorer`. This allows to choose different metrics depending on the scoring task at hand. Furthermore, I added a modular `Alphabet` system which allows to add new languages for unigram- and bigram-based scoring.
 
-#### Resources
-*Letter Frequencies:*
+The solution to the challenge is now to simply try each character as key, use our previously defined XOR function and score the resulting output.
+
+*Letter Frequency Resources:*
 - Peter Norvig, [English Letter Frequency Counts: Mayzner Revisited or ETAOIN SRHLDCU](https://norvig.com/mayzner.html)
-- 
+- The related [gist](https://gist.github.com/lydell/c439049abac2c9226e53) which helps extracting the data
+- For log-likelihood and $\chi^2$ tests consult the Wikipedia articles or any standard work on statistics.
 
 ## Challenge 4 - Detect Single-Character XOR
 
