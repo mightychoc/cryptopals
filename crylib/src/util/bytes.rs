@@ -1,16 +1,27 @@
-use crate::error::{CryptoError, CryptoResult};
+use crate::{CryptoError, CryptoResult};
 
-pub fn xor(input: &[u8], stream: &[u8]) -> CryptoResult<Vec<u8>> {
-    if stream.is_empty() {
-        return Err(CryptoError::EmptyKeyStream);
-    }
-
-    Ok(input
-        .iter()
-        .zip(stream.iter().cycle())
-        .map(|(b_in, b_st)| b_in ^ b_st)
-        .collect())
+pub trait XorCipher {
+    fn xor(&self, key: &[u8]) -> CryptoResult<Vec<u8>>;
 }
+
+impl XorCipher for [u8] {
+    fn xor(&self, key: &[u8]) -> CryptoResult<Vec<u8>> {
+        if key.is_empty() {return Err(CryptoError::EmptyKeyStream); }
+        Ok(self.iter().zip(key.iter().cycle()).map(|(a,b)| a^b).collect())
+    }
+}
+
+// pub fn xor(input: &[u8], stream: &[u8]) -> CryptoResult<Vec<u8>> {
+//     if stream.is_empty() {
+//         return Err(CryptoError::EmptyKeyStream);
+//     }
+
+//     Ok(input
+//         .iter()
+//         .zip(stream.iter().cycle())
+//         .map(|(b_in, b_st)| b_in ^ b_st)
+//         .collect())
+// }
 
 // Decodes a hexstring to a byte vector
 pub fn from_hex(hexstr: &str) -> CryptoResult<Vec<u8>> {
@@ -228,7 +239,7 @@ mod tests {
 
         #[test]
         fn xor_empty_stream_is_error() {
-            let err = xor(&[0x01, 0x02], &[]).unwrap_err();
+            let err = [0x01, 0x02].xor(&[]).unwrap_err();
             assert!(
                 matches!(err, CryptoError::EmptyKeyStream),
                 "Expected EmptyKeyStream, got: {err}"
@@ -239,7 +250,7 @@ mod tests {
         fn xor_empty_stream_empty_input_is_error() {
             // Empty stream is always invalid, even with empty input,
             // because we can't know the caller's intent
-            let err = xor(&[], &[]).unwrap_err();
+            let err = [].xor(&[]).unwrap_err();
             assert!(matches!(err, CryptoError::EmptyKeyStream));
         }
 
@@ -247,7 +258,7 @@ mod tests {
 
         #[test]
         fn xor_empty_input_returns_empty() {
-            let result = xor(&[], &[0xff]).unwrap();
+            let result = [].xor(&[0xff]).unwrap();
             assert!(result.is_empty());
         }
 
@@ -255,14 +266,14 @@ mod tests {
         fn xor_with_zero_is_identity() {
             let input = b"hello world";
             let stream = vec![0x00];
-            let result = xor(input, &stream).unwrap();
+            let result = input.xor(&stream).unwrap();
             assert_eq!(result, input);
         }
 
         #[test]
         fn xor_with_all_ones_is_bitwise_not() {
             let input = vec![0b10101010, 0b11001100, 0b11110000];
-            let result = xor(&input, &[0xff]).unwrap();
+            let result = input.xor(&[0xff]).unwrap();
             assert_eq!(result, vec![0b01010101, 0b00110011, 0b00001111]);
         }
 
@@ -270,15 +281,15 @@ mod tests {
         fn xor_is_own_inverse() {
             let input = b"secret message";
             let key = b"key";
-            let encrypted = xor(input, key).unwrap();
-            let decrypted = xor(&encrypted, key).unwrap();
+            let encrypted = input.xor(key).unwrap();
+            let decrypted = encrypted.xor(key).unwrap();
             assert_eq!(decrypted, input);
         }
 
         #[test]
         fn xor_single_byte_key() {
             let input = vec![0x1b, 0x37, 0x37, 0x33, 0x31];
-            let result = xor(&input, &[0x58]).unwrap();
+            let result = input.xor(&[0x58]).unwrap();
             assert_eq!(result, vec![0x43, 0x6f, 0x6f, 0x6b, 0x69]);
         }
 
@@ -287,7 +298,7 @@ mod tests {
             // When key length == input length, cycling has no effect
             let a = vec![0b11001100, 0b10101010, 0b11110000];
             let b = vec![0b01010101, 0b01100110, 0b00001111];
-            let result = xor(&a, &b).unwrap();
+            let result = a.xor(&b).unwrap();
             assert_eq!(result, vec![0b10011001, 0b11001100, 0b11111111]);
         }
 
@@ -298,7 +309,7 @@ mod tests {
             // Manually verify that the key wraps at the right positions
             let input = vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
             let key = vec![0x01, 0x02, 0x03];
-            let result = xor(&input, &key).unwrap();
+            let result = input.xor(&key).unwrap();
             // XOR with 0x00 is identity on the key, so we just see the key repeated
             assert_eq!(result, vec![0x01, 0x02, 0x03, 0x01, 0x02, 0x03]);
         }
@@ -308,14 +319,14 @@ mod tests {
             // Only the first input.len() bytes of the key are used
             let input = vec![0x00, 0x00];
             let key = vec![0xaa, 0xbb, 0xcc, 0xdd];
-            let result = xor(&input, &key).unwrap();
+            let result = input.xor(&key).unwrap();
             assert_eq!(result, vec![0xaa, 0xbb]);
         }
 
         #[test]
         fn xor_key_length_one_is_single_byte_xor() {
             let input = vec![0x00, 0x01, 0x02, 0x03];
-            let result = xor(&input, &[0x0f]).unwrap();
+            let result = input.xor(&[0x0f]).unwrap();
             assert_eq!(result, vec![0x0f, 0x0e, 0x0d, 0x0c]);
         }
 
@@ -326,7 +337,7 @@ mod tests {
             // a ^ b == b ^ a
             let a = vec![0xde, 0xad];
             let b = vec![0xbe, 0xef];
-            assert_eq!(xor(&a, &b).unwrap(), xor(&b, &a).unwrap());
+            assert_eq!(a.xor(&b).unwrap(), b.xor(&a).unwrap());
         }
 
         #[test]
@@ -334,7 +345,7 @@ mod tests {
             for input_len in [0, 1, 2, 15, 16, 17, 100] {
                 let input = vec![0xaa; input_len];
                 let key = vec![0x01, 0x02, 0x03];
-                let result = xor(&input, &key).unwrap();
+                let result = input.xor(&key).unwrap();
                 assert_eq!(
                     result.len(),
                     input_len,
