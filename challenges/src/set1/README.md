@@ -45,7 +45,7 @@ If your function works properly, then when you feed it the string:
 
 ### Solution
 
-Simply implement a function which byte-wise XORs two `Vec<u8>` buffers to solve this challenge.
+Simply implement a function which byte-wise XORs two `&[u8]` buffers to solve this challenge. The only detail one needs to pay attention to is to `cycle()` the key stream iterator in order for the function to be usable in challenge 3.
 
 ## Challenge 3 - Single-Byte XOR Cipher
 

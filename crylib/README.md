@@ -3,7 +3,7 @@
 This directory contains the cryptographic primitives developed and extended while solving the cryptopals challenges. It is structured like so:
 
 - [analysis](./src/analysis/) contains code used for analysing cipher and plaintext. Think letter-frequency scoring, cipher type detection or chaining mode (e.g. ECB) detection.
-- [asmy](./src/asym/) bundles everything related to asymmetric ciphers/public-key cryptography.
+- [asym](./src/asym/) bundles everything related to asymmetric ciphers/public-key cryptography.
 - [attack](./src/attack/) contains primitives for attacking flawed cryptographic primitives (or flawed implementations).
 - [ecc](./src/ecc/) is all about elliptic-curve cryptography.
 - [hash](./src/hash/) holds implementation of various hashing algorithms.
